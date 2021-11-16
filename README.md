@@ -1,0 +1,3 @@
+# primaten
+zellularautomat
+primaten
