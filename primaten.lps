@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="primaten.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="25" Y="10"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="umain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UMain"/>
+        <TopLine Value="17"/>
+        <CursorPos X="27" Y="196"/>
+        <ComponentState Value="1"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="unitprimaten.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Unitprimaten"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="297"/>
+        <CursorPos Y="326"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="3646"/>
+        <CursorPos Y="3668"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit3>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="umain.pas"/>
+        <Caret Line="97" Column="3" TopLine="93"/>
+      </Position1>
+      <Position2>
+        <Filename Value="umain.pas"/>
+        <Caret Line="98" Column="3" TopLine="94"/>
+      </Position2>
+      <Position3>
+        <Filename Value="umain.pas"/>
+        <Caret Line="99" Column="3" TopLine="95"/>
+      </Position3>
+      <Position4>
+        <Filename Value="umain.pas"/>
+        <Caret Line="100" Column="3" TopLine="96"/>
+      </Position4>
+      <Position5>
+        <Filename Value="umain.pas"/>
+        <Caret Line="101" Column="3" TopLine="97"/>
+      </Position5>
+      <Position6>
+        <Filename Value="umain.pas"/>
+        <Caret Line="102" Column="3" TopLine="98"/>
+      </Position6>
+      <Position7>
+        <Filename Value="umain.pas"/>
+        <Caret Line="101" Column="3" TopLine="97"/>
+      </Position7>
+      <Position8>
+        <Filename Value="umain.pas"/>
+        <Caret Line="100" Column="3"/>
+      </Position8>
+      <Position9>
+        <Filename Value="umain.pas"/>
+        <Caret Line="101" Column="3" TopLine="57"/>
+      </Position9>
+      <Position10>
+        <Filename Value="umain.pas"/>
+        <Caret Line="103" Column="3" TopLine="103"/>
+      </Position10>
+      <Position11>
+        <Filename Value="umain.pas"/>
+        <Caret Line="158" Column="3" TopLine="156"/>
+      </Position11>
+      <Position12>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="217" Column="16" TopLine="195"/>
+      </Position12>
+      <Position13>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="248" Column="13" TopLine="231"/>
+      </Position13>
+      <Position14>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="258" TopLine="237"/>
+      </Position14>
+      <Position15>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="311" Column="55" TopLine="271"/>
+      </Position15>
+      <Position16>
+        <Filename Value="umain.pas"/>
+        <Caret Line="159" Column="16" TopLine="143"/>
+      </Position16>
+      <Position17>
+        <Filename Value="umain.pas"/>
+        <Caret Line="131" Column="30" TopLine="120"/>
+      </Position17>
+      <Position18>
+        <Filename Value="umain.pas"/>
+        <Caret Line="166" TopLine="156"/>
+      </Position18>
+      <Position19>
+        <Filename Value="umain.pas"/>
+        <Caret Line="57" TopLine="36"/>
+      </Position19>
+      <Position20>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="291" Column="34" TopLine="173"/>
+      </Position20>
+      <Position21>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="288" Column="50" TopLine="272"/>
+      </Position21>
+      <Position22>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="229" Column="34" TopLine="205"/>
+      </Position22>
+      <Position23>
+        <Filename Value="umain.pas"/>
+        <Caret Line="172" Column="27" TopLine="87"/>
+      </Position23>
+      <Position24>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="229" Column="53" TopLine="194"/>
+      </Position24>
+      <Position25>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="94" Column="11" TopLine="94"/>
+      </Position25>
+      <Position26>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="229" Column="45" TopLine="196"/>
+      </Position26>
+      <Position27>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="163" Column="394" TopLine="146"/>
+      </Position27>
+      <Position28>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="231" Column="45" TopLine="198"/>
+      </Position28>
+      <Position29>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="154" Column="3" TopLine="141"/>
+      </Position29>
+      <Position30>
+        <Filename Value="unitprimaten.pas"/>
+        <Caret Line="232" Column="53" TopLine="205"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

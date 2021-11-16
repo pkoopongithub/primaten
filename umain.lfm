@@ -1,0 +1,329 @@
+object frmMain: TfrmMain
+  Left = 398
+  Height = 555
+  Top = 164
+  Width = 1059
+  BorderStyle = bsDialog
+  Caption = 'Primaten'
+  ClientHeight = 555
+  ClientWidth = 1059
+  OnClose = FormClose
+  OnCreate = FormCreate
+  ParentFont = True
+  LCLVersion = '1.6.4.0'
+  object pnlBottom: TPanel
+    Left = 0
+    Height = 45
+    Top = 510
+    Width = 1059
+    Align = alBottom
+    ClientHeight = 45
+    ClientWidth = 1059
+    TabOrder = 0
+    object btnNext: TButton
+      Left = 8
+      Height = 33
+      Top = 6
+      Width = 89
+      Caption = '&Nächster Zeittakt'
+      OnClick = Auswerten
+      TabOrder = 0
+    end
+    object btnStart: TButton
+      Left = 110
+      Height = 33
+      Top = 6
+      Width = 89
+      Caption = '&Start'
+      OnClick = btnStartClick
+      TabOrder = 1
+    end
+    object btnStopp: TButton
+      Left = 206
+      Height = 33
+      Top = 5
+      Width = 89
+      Caption = 'Sto&pp'
+      OnClick = btnStoppClick
+      TabOrder = 2
+    end
+    object btnZufall: TButton
+      Left = 304
+      Height = 33
+      Top = 6
+      Width = 89
+      Caption = '&Zufall'
+      OnClick = btnZufallClick
+      TabOrder = 3
+    end
+  end
+  object Spielfeld: TDrawGrid
+    Left = 0
+    Height = 248
+    Top = 0
+    Width = 808
+    ColCount = 80
+    DefaultColWidth = 10
+    DefaultDrawing = False
+    DefaultRowHeight = 10
+    ExtendedSelect = False
+    FixedCols = 0
+    FixedRows = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
+    RowCount = 24
+    TabOrder = 1
+    OnDrawCell = SpielfeldDrawCell
+  end
+  object Kulturmonitor: TStringGrid
+    Left = 0
+    Height = 248
+    Top = 256
+    Width = 808
+    ColCount = 80
+    DefaultColWidth = 10
+    DefaultRowHeight = 10
+    FixedCols = 0
+    FixedRows = 0
+    RowCount = 24
+    TabOrder = 2
+    OnDrawCell = KulturmonitorDrawCell
+  end
+  object Shape1: TShape
+    Left = 884
+    Height = 65
+    Top = 8
+    Width = 65
+    Brush.Color = clLime
+  end
+  object Shape2: TShape
+    Left = 816
+    Height = 65
+    Top = 77
+    Width = 65
+    Brush.Color = clRed
+  end
+  object Shape3: TShape
+    Left = 884
+    Height = 65
+    Top = 77
+    Width = 65
+    Brush.Color = clFuchsia
+  end
+  object Shape4: TShape
+    Left = 816
+    Height = 65
+    Top = 8
+    Width = 65
+    Brush.Color = clGreen
+  end
+  object StaticText1: TStaticText
+    Left = 958
+    Height = 17
+    Top = 36
+    Width = 65
+    Caption = 'weiblich'
+    TabOrder = 3
+  end
+  object StaticText2: TStaticText
+    Left = 958
+    Height = 17
+    Top = 88
+    Width = 65
+    Caption = 'männlich'
+    TabOrder = 4
+  end
+  object StaticText3: TStaticText
+    Left = 816
+    Height = 17
+    Top = 144
+    Width = 137
+    Caption = 'Silberrücken'
+    OnClick = StaticText3Click
+    TabOrder = 5
+  end
+  object StaticText4: TStaticText
+    Left = 888
+    Height = 17
+    Top = 144
+    Width = 65
+    Caption = 'Jungtier'
+    TabOrder = 6
+  end
+  object StaticText5: TStaticText
+    Left = 818
+    Height = 17
+    Top = 269
+    Width = 176
+    Caption = 'Kulturmonitor / Primatenkulturen'
+    TabOrder = 7
+  end
+  object Shape6: TShape
+    Left = 818
+    Height = 13
+    Top = 296
+    Width = 15
+  end
+  object Shape7: TShape
+    Left = 818
+    Height = 13
+    Top = 312
+    Width = 15
+    Brush.Color = clMaroon
+  end
+  object Shape8: TShape
+    Left = 818
+    Height = 13
+    Top = 328
+    Width = 15
+    Brush.Color = clGreen
+  end
+  object Shape9: TShape
+    Left = 818
+    Height = 13
+    Top = 344
+    Width = 15
+    Brush.Color = clOlive
+  end
+  object Shape10: TShape
+    Left = 818
+    Height = 13
+    Top = 360
+    Width = 15
+    Brush.Color = clNavy
+  end
+  object Shape11: TShape
+    Left = 818
+    Height = 13
+    Top = 376
+    Width = 15
+    Brush.Color = clPurple
+  end
+  object Shape12: TShape
+    Left = 818
+    Height = 13
+    Top = 392
+    Width = 15
+    Brush.Color = clTeal
+  end
+  object Shape13: TShape
+    Left = 818
+    Height = 13
+    Top = 408
+    Width = 15
+    Brush.Color = clRed
+  end
+  object Shape14: TShape
+    Left = 818
+    Height = 13
+    Top = 424
+    Width = 15
+    Brush.Color = clLime
+  end
+  object StaticText6: TStaticText
+    Left = 840
+    Height = 17
+    Top = 296
+    Width = 86
+    Caption = '0 leeres Feld'
+    TabOrder = 8
+  end
+  object Shape5: TShape
+    Left = 816
+    Height = 65
+    Top = 176
+    Width = 65
+  end
+  object StaticText7: TStaticText
+    Left = 884
+    Height = 17
+    Top = 192
+    Width = 134
+    Caption = 'leeres Feld / kein Primat'
+    TabOrder = 9
+  end
+  object StaticText8: TStaticText
+    Left = 840
+    Height = 17
+    Top = 312
+    Width = 86
+    Caption = 'Kultur 1'
+    TabOrder = 10
+  end
+  object StaticText9: TStaticText
+    Left = 840
+    Height = 17
+    Top = 328
+    Width = 86
+    Caption = 'Kultur 2'
+    TabOrder = 11
+  end
+  object StaticText10: TStaticText
+    Left = 840
+    Height = 17
+    Top = 344
+    Width = 86
+    Caption = 'Kultur 3'
+    TabOrder = 12
+  end
+  object StaticText11: TStaticText
+    Left = 840
+    Height = 17
+    Top = 360
+    Width = 86
+    Caption = 'Kultur 4'
+    TabOrder = 13
+  end
+  object StaticText12: TStaticText
+    Left = 840
+    Height = 17
+    Top = 376
+    Width = 86
+    Caption = 'Kultur 5'
+    TabOrder = 14
+  end
+  object StaticText13: TStaticText
+    Left = 840
+    Height = 17
+    Top = 392
+    Width = 86
+    Caption = 'Kultur 6'
+    TabOrder = 15
+  end
+  object StaticText14: TStaticText
+    Left = 840
+    Height = 17
+    Top = 408
+    Width = 86
+    Caption = 'Kultur 7'
+    TabOrder = 16
+  end
+  object StaticText15: TStaticText
+    Left = 840
+    Height = 17
+    Top = 424
+    Width = 86
+    Caption = 'Kultur 8'
+    TabOrder = 17
+  end
+  object Shape15: TShape
+    Left = 818
+    Height = 13
+    Top = 440
+    Width = 15
+    Brush.Color = clYellow
+  end
+  object StaticText16: TStaticText
+    Left = 840
+    Height = 17
+    Top = 440
+    Width = 86
+    Caption = 'Kultur 9'
+    TabOrder = 18
+  end
+  object tmrAnimation: TTimer
+    Interval = 40
+    OnTimer = Auswerten
+    left = 8
+    top = 8
+  end
+end
