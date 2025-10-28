@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Primaten – erweiterte Kultursimulation</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+
+    header {
+      position: relative;
+      text-align: center;
+    }
+
+    header img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    footer {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+
+    nav {
+      background-color: #343a40;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0.5rem 1rem;
+      font-weight: bold;
+    }
+
+    nav a:focus,
+    nav a:hover {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: -0.5rem;
+    }
+
+    .col {
+      flex: 1 1 100%;
+      padding: 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .col-md-4 {
+        flex: 0 0 33.3333%;
+      }
+    }
+
+    .p-3 {
+      padding: 1rem;
+    }
+
+    .mb-4 {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Hintergrund weiß für Text-Container */
+    .bg-light {
+      background-color: #ffffff;
+      text-align: justify; /* Blocksatz für Fließtext */
+    }
+
+    /* Überschriften zentriert in den hellen Boxen */
+    .bg-light h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    /* Bilder nicht im Blocksatz */
+    .bg-light img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Stile für die Primaten-Simulation */
+    .simulation-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      margin-bottom: 2rem;
+    }
+
+    .simulation-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .simulation-controls button {
+      background: #2b6cff;
+      border: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .simulation-controls button.primary {
+      background: #22aa22;
+    }
+
+    .simulation-controls button.danger {
+      background: #cc3333;
+    }
+
+    .simulation-panel {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
+      margin-bottom: 8px;
+    }
+
+    .simulation-canvas-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .simulation-canvas {
+      display: block;
+      background: #000;
+      border-radius: 4px;
+    }
+
+    .simulation-legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .simulation-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.5);
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .simulation-label {
+      font-size: 13px;
+      color: #6c757d;
+    }
+
+    .simulation-info {
+      font-size: 12px;
+      color: #6c757d;
+      margin-left: 6px;
+    }
+
+    .simulation-export {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="img/headerbild.jpeg" alt="Headerbild" />
+  </header>
+
+  <nav>
+    <a href="https://pkoopongithub.github.io/">Home</a>
+    <a href="https://pkoopongithub.github.io/duesseldorfer-schuelerinventar-bootstrap-mysql-php/">Düsk</a>
+    <a href="https://pkoopongithub.github.io/algorithmisch-rekursive-sequenzanalyse/">Ars</a>
+    <a href="https://pkoopongithub.github.io/Projekt_Pompeji/">Pompeji</a>
+    <a href="https://pkoopongithub.github.io/DavidDeutschMetaphysicalMeditations/">Pencil</a>
+    <a href="https://pkoopongithub.github.io/primaten/">Primaten</a>
+  </nav>
+
+<div class="container">
+  <h1 class="mb-4 text-center">Primaten – erweiterte Kultursimulation</h1>
+  <p class="mb-4 text-center">Eine agentenbasierte Simulation zur Erforschung kultureller Dynamiken in Primatengruppen</p>
+  <p class="mb-4 text-center">An agent-based simulation for exploring cultural dynamics in primate groups</p>
+    
+  <div class="row">
+    <div class="col col-md-4">
+      <div class="p-3 bg-light">
+        <img src="img/links.jpg" alt="Primaten-Simulation" />
+        <h2>Primaten-Simulation</h2>
+        <p>
+          Diese Simulation modelliert die Entwicklung kultureller Muster in einer Population von Primaten. Jeder Agent verfügt über Eigenschaften wie Geschlecht, Alter, Kulturzugehörigkeit und sozialen Einfluss. Die Simulation zeigt, wie sich kulturelle Merkmale durch soziale Interaktionen verbreiten und verändern.
+        </p>
+        <p>
+          This simulation models the development of cultural patterns in a population of primates. Each agent has properties such as gender, age, cultural affiliation, and social influence. The simulation shows how cultural traits spread and change through social interactions.
+        </p>
+        <div class="text-center" style="margin-top: 2rem;">
+          <a href="https://github.com/pkoopongithub/primaten-kultursimulation" class="btn">Mehr erfahren / Learn more</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col col-md-4">
+      <div class="p-3 bg-light">
+        <img src="img/mitte.png" alt="PNG Export" />
+        <h2>PNG Export</h2>
+        <p>
+          Die Simulation ermöglicht den Export der Diagramme als PNG-Bilder. Diese Funktion erlaubt es, den Verlauf der kulturellen Entwicklung visuell festzuhalten und für Präsentationen oder Analysen zu verwenden. Die Diagramme zeigen die Verteilung der Kulturen über die Zeit.
+        </p>
+        <p>
+          The simulation allows exporting diagrams as PNG images. This function enables capturing the course of cultural development visually for use in presentations or analyses. The diagrams show the distribution of cultures over time.
+        </p>
+        <div class="text-center" style="margin-top: 2rem;">
+          <a href="https://github.com/pkoopongithub/primaten-kultursimulation" class="btn">Mehr erfahren / Learn more</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col col-md-4">
+      <div class="p-3 bg-light">
+        <img src="img/rechts.jpg" alt="CSV Export" />
+        <h2>CSV Export</h2>
+        <p>
+          Mit dem CSV-Export können die Simulationsdaten für weitergehende statistische Analysen gespeichert werden. Die exportierten Daten enthalten Informationen zur Populationsgröße und zur Verteilung der Kulturen zu jedem Zeitpunkt der Simulation.
+        </p>
+        <p>
+          With the CSV export, simulation data can be saved for further statistical analyses. The exported data contains information on population size and the distribution of cultures at each point in time of the simulation.
+        </p>
+        <div class="text-center" style="margin-top: 2rem;">
+          <a href="https://github.com/pkoopongithub/primaten-kultursimulation" class="btn">Mehr erfahren / Learn more</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Primaten-Simulation -->
+  <div class="simulation-container">
+    <h2>Primaten-Kultursimulation</h2>
+    
+    <div class="simulation-controls">
+      <button id="btnZufall">🔀 Zufallsverteilung</button>
+      <button id="btnStart" class="primary">▶ Start</button>
+      <button id="btnStop" class="danger">⏸ Stopp</button>
+
+      <label class="simulation-label"><input type="checkbox" id="chkPopulation" checked> Gesamtpopulation anzeigen</label>
+      <label class="simulation-label"><input type="checkbox" id="chkAutoStop"> Auto-Stopp bei Monokultur</label>
+
+      <label class="simulation-label" style="margin-left:8px">Zeithorizont:
+        <select id="selWindow">
+          <option value="all">Alle</option>
+          <option value="1000">Letzte 1000</option>
+          <option value="600" selected>Letzte 600</option>
+          <option value="200">Letzte 200</option>
+          <option value="100">Letzte 100</option>
+        </select>
+      </label>
+
+      <label class="simulation-label" style="margin-left:8px">Tick (ms):
+        <select id="selTick">
+          <option>50</option><option>100</option><option selected>150</option><option>250</option><option>400</option>
+        </select>
+      </label>
+
+      <div id="monokulturInfo" class="simulation-info"></div>
+    </div>
+
+    <div class="simulation-panel" style="margin-bottom:8px; display:flex;gap:16px;">
+      <div><strong>Population:</strong> <span id="popCount">–</span></div>
+      <div><strong>Tick:</strong> <span id="tickCount">0</span></div>
+      <div><strong>Dominante Kultur:</strong> <span id="dominantCulture">–</span></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="simulation-panel">
+          <div class="simulation-canvas-container">
+            <canvas id="canvasStatus" width="320" height="320"></canvas>
+            <canvas id="canvasKultur" width="320" height="320"></canvas>
+          </div>
+          <div style="margin-top:8px;">
+            <canvas id="canvasDiagramm" width="640" height="220"></canvas>
+          </div>
+          <div class="simulation-export">
+            <button id="btnExportCSV">💾 Export CSV</button>
+            <button id="btnExportPNG">🖼 Export PNG</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="simulation-panel">
+          <div class="simulation-label">Legende — Geschlecht &amp; Alter</div>
+          <div class="simulation-legend">
+            <div><span class="simulation-swatch" style="background:#ffb6c1"></span> weiblich, jung</div>
+            <div><span class="simulation-swatch" style="background:#87cefa"></span> männlich, jung</div>
+            <div><span class="simulation-swatch" style="background:#ff69b4"></span> weiblich, erwachsen</div>
+            <div><span class="simulation-swatch" style="background:#1e90ff"></span> männlich, erwachsen</div>
+          </div>
+          <hr style="border:none;height:8px">
+          <div class="simulation-label">Kulturfarben</div>
+          <div id="legendKultur" class="simulation-legend" style="margin-top:6px;max-width:240px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<footer>
+  Paul Koop &middot; Thomashofstraße 19 &middot; 52070 Aachen<br />
+  <a href="https://github.com/pkoopongithub/pkoopongithub.github.io/discussions/1" style="color: #ffc107; text-decoration: none;">Zur Diskussion auf GitHub</a>
+  
+  <a href="https://github.com/pkoopongithub/primaten" style="color: #ffc107; text-decoration: none;">
+    Primaten Simulation auf GitHub
+  </a>
+</footer>
+
+<script>
+// Primaten-Simulation JavaScript Code
+const BREITE=60, HOEHE=60;
+let TICK_MS=150, timer=null, tickIndex=0, history=[], raum=[];
+const MAX_HISTORY=5000;
+const KULTUR_FARBEN=[null,'#e6194B','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#46f0f0','#f032e6','#bcf60c'];
+const cS=document.getElementById('canvasStatus').getContext('2d');
+const cK=document.getElementById('canvasKultur').getContext('2d');
+const cD=document.getElementById('canvasDiagramm').getContext('2d');
+const popCount=document.getElementById('popCount');
+const tickCount=document.getElementById('tickCount');
+const dominant=document.getElementById('dominantCulture');
+const monokulturInfo=document.getElementById('monokulturInfo');
+const chkPop=document.getElementById('chkPopulation');
+const chkAutoStop=document.getElementById('chkAutoStop');
+const selWindow=document.getElementById('selWindow');
+const selTick=document.getElementById('selTick');
+
+class Primat{constructor(s=0,a=0,g=0,k=0,m=0){this.status=s;this.alter=a;this.geschlecht=g;this.kultur=k;this.macht=m;}}
+function createEmpty(){return Array.from({length:HOEHE},()=>Array.from({length:BREITE},()=>new Primat()));}
+function zufallsverteilung(){
+  raum=createEmpty();
+  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)
+    if(Math.random()<0.1)
+      raum[y][x]=new Primat(1,0,Math.random()<0.5?1:2,1+Math.floor(Math.random()*9),1+Math.floor(Math.random()*9));
+  tickIndex=0;history=[];
+  updateDisplays();
+}
+function nachbarn(r,x,y){
+  const xm1=(x-1+BREITE)%BREITE,xp1=(x+1)%BREITE,ym1=(y-1+HOEHE)%HOEHE,yp1=(y+1)%HOEHE;
+  return [r[ym1][xm1],r[ym1][x],r[ym1][xp1],r[y][xm1],r[y][xp1],r[yp1][xm1],r[yp1][x],r[yp1][xp1]];
+}
+function kind(m){return new Primat(1,0,Math.random()<0.5?1:2,m.kultur,m.macht);}
+function neu(r,x,y){
+  const n=Object.assign(new Primat(),r[y][x]),nb=nachbarn(r,x,y);
+  if(n.status>0){if(Math.random()<0.8)n.alter++;if(n.alter>19)n.status=0;else if(n.alter>=3&&n.status===1)n.status=2;}
+  if(n.status===0){
+    const wm=nb.filter(p=>p.status===2&&p.geschlecht===1),mm=nb.filter(p=>p.status===2&&p.geschlecht===2);
+    if(wm.length&&mm.length&&Math.random()<0.25)return kind(wm[Math.floor(Math.random()*wm.length)]);
+    if(Math.random()<0.001)return new Primat(1,0,Math.random()<0.5?1:2,1+Math.floor(Math.random()*9),1+Math.floor(Math.random()*9));
+  }
+  if(n.status>0){
+    const fremde=nb.filter(p=>p.kultur!==n.kultur);
+    if(fremde.length===8)return new Primat();
+  }
+  if(n.status===2){
+    const staerker=nb.filter(p=>p.status===2&&p.macht>n.macht);
+    if(staerker.length){
+      const a=staerker.reduce((x,y)=>x.macht>y.macht?x:y);
+      if(Math.random()<0.3){n.kultur=a.kultur;n.macht=Math.max(0,n.macht-1);}
+    }else n.macht=Math.min(9,n.macht+0.1);
+  }
+  return n;
+}
+function berechneStat(){
+  const c=Array(9).fill(0);let pop=0;
+  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+    const p=raum[y][x];if(p.status>0&&p.kultur>0){c[p.kultur-1]++;pop++;}}
+  const fr=c.map(v=>pop>0?v/pop:0);history.push({fractions:fr,population:pop,tick:tickIndex});
+  if(history.length>MAX_HISTORY)history.shift();
+  return{fr,pop};
+}
+function detectMono(fr,p){const i=fr.indexOf(Math.max(...fr)),v=fr[i];return(v>=0.995&&p>10)?{mono:true,k:i+1}:{mono:false};}
+function zeichneStatus(){
+  const cell=Math.floor(320/BREITE);
+  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+    const p=raum[y][x];let col='#000';
+    if(p.status===1)col=p.geschlecht===1?'#ffb6c1':'#87cefa';
+    else if(p.status===2)col=p.geschlecht===1?'#ff69b4':'#1e90ff';
+    cS.fillStyle=col;cS.fillRect(x*cell,y*cell,cell,cell);
+  }
+}
+function zeichneKultur(){
+  const cell=Math.floor(320/BREITE);
+  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+    const p=raum[y][x],col=p.kultur>0?KULTUR_FARBEN[p.kultur]:'#000';
+    cK.fillStyle=col;cK.fillRect(x*cell,y*cell,cell,cell);
+  }
+}
+function drawChart(){
+  const W=640,H=220; cD.fillStyle='#000'; cD.fillRect(0,0,W,H);
+  const wnd=(selWindow.value==='all')?history.length:Math.min(history.length,parseInt(selWindow.value));
+  if(wnd<2)return;
+  const px=W/Math.max(wnd-1,1);
+  for(let k=0;k<9;k++){
+    cD.beginPath();cD.strokeStyle=KULTUR_FARBEN[k+1];cD.lineWidth=2;
+    for(let i=0;i<wnd;i++){
+      const d=history[history.length-wnd+i];
+      const x=i*px,y=H-d.fractions[k]*H;
+      if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
+    }cD.stroke();
+  }
+  if(chkPop.checked){
+    cD.beginPath();cD.strokeStyle='#fff';cD.lineWidth=1.5;
+    for(let i=0;i<wnd;i++){
+      const d=history[history.length-wnd+i];
+      const y=H-(d.population/(BREITE*HOEHE))*H;
+      const x=i*px;
+      if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
+    }cD.stroke();
+  }
+}
+function tick(){
+  const newR=createEmpty();
+  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)newR[y][x]=neu(raum,x,y);
+  raum=newR;tickIndex++;
+  const {fr,pop}=berechneStat();
+  const det=detectMono(fr,pop);
+  if(det.mono){monokulturInfo.textContent=`Monokultur erkannt: Kultur ${det.k}`;
+    if(chkAutoStop.checked)stopSim();}
+  else monokulturInfo.textContent='';
+  dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);
+  popCount.textContent=pop;tickCount.textContent=tickIndex;
+  zeichneStatus();zeichneKultur();drawChart();
+}
+function startSim(){if(timer)return;TICK_MS=parseInt(selTick.value,10);timer=setInterval(tick,TICK_MS);}
+function stopSim(){if(!timer)return;clearInterval(timer);timer=null;}
+function updateDisplays(){const {fr,pop}=berechneStat();zeichneStatus();zeichneKultur();drawChart();
+  popCount.textContent=pop;dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);}
+function exportCSV(){
+  if(!history.length)return;const head=['tick','pop',...Array.from({length:9},(_,i)=>'k'+(i+1))];
+  const rows=[head.join(',')];for(const d of history)
+    rows.push([d.tick,d.population,...d.fractions.map(f=>f.toFixed(5))].join(','));
+  const blob=new Blob([rows.join('\n')],{type:'text/csv'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='kulturverlauf.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function exportPNG(){const a=document.createElement('a');a.href=document.getElementById('canvasDiagramm').toDataURL();a.download='diagramm.png';a.click();}
+function buildLegend(){
+  const box=document.getElementById('legendKultur');box.innerHTML='';
+  for(let i=1;i<=9;i++){const d=document.createElement('div');
+    d.innerHTML=`<span class='simulation-swatch' style='background:${KULTUR_FARBEN[i]}'></span>Kultur ${i}`;box.appendChild(d);}
+}
+document.getElementById('btnZufall').onclick=()=>{zufallsverteilung();updateDisplays();};
+document.getElementById('btnStart').onclick=startSim;
+document.getElementById('btnStop').onclick=stopSim;
+document.getElementById('btnExportCSV').onclick=exportCSV;
+document.getElementById('btnExportPNG').onclick=exportPNG;
+selTick.onchange=()=>{TICK_MS=parseInt(selTick.value,10);if(timer){stopSim();startSim();}};
+selWindow.onchange=drawChart;
+buildLegend();
+zufallsverteilung();updateDisplays();
+</script>
+
+</body>
+</html>
