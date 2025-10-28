@@ -373,11 +373,17 @@
 </footer>
 
 <script>
-// Primaten-Simulation JavaScript Code
+// Primaten-Simulation JavaScript Code mit 5 Erweiterungen
 const BREITE=60, HOEHE=60;
 let TICK_MS=150, timer=null, tickIndex=0, history=[], raum=[];
+// NEU: Hinzufügen einer Ressourcen-Ebene
+let ressourcen = []; 
 const MAX_HISTORY=5000;
 const KULTUR_FARBEN=[null,'#e6194B','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#46f0f0','#f032e6','#bcf60c'];
+
+// NEU: Kulturelle Toleranz-Werte (zufällig oder definiert für K1-K9)
+const KULTUR_TOLERANZ = [null, 0.2, 0.8, 0.4, 0.9, 0.5, 0.1, 0.7, 0.3, 0.6]; // Beispielwerte für die 9 Kulturen
+
 const cS=document.getElementById('canvasStatus').getContext('2d');
 const cK=document.getElementById('canvasKultur').getContext('2d');
 const cD=document.getElementById('canvasDiagramm').getContext('2d');
@@ -390,120 +396,282 @@ const chkAutoStop=document.getElementById('chkAutoStop');
 const selWindow=document.getElementById('selWindow');
 const selTick=document.getElementById('selTick');
 
-class Primat{constructor(s=0,a=0,g=0,k=0,m=0){this.status=s;this.alter=a;this.geschlecht=g;this.kultur=k;this.macht=m;}}
+// 1. Kulturelle Hybridisierung & Erweiterung der Primaten-Klasse
+class Primat{
+    constructor(s=0,a=0,g=0,k1=0,k2=0,m=0){
+        this.status=s;           // 0:leer, 1:jung, 2:erwachsen
+        this.alter=a;
+        this.geschlecht=g;       // 1:weiblich, 2:männlich
+        this.kultur=k1;          // Primärkultur
+        this.kultur2=k2;         // Sekundärkultur (Hybridisierung)
+        this.macht=m;            // Macht
+    }
+}
 function createEmpty(){return Array.from({length:HOEHE},()=>Array.from({length:BREITE},()=>new Primat()));}
+
+// NEU: Initialisierung der Ressourcen-Ebene
+function initRessourcen(){
+    ressourcen=Array.from({length:HOEHE},()=>Array.from({length:BREITE},()=>0));
+    // Zufällige Verteilung der Ressourcen (z.B. 0 bis 5)
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)
+        ressourcen[y][x]=Math.floor(Math.random()*6);
+}
+
 function zufallsverteilung(){
-  raum=createEmpty();
-  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)
-    if(Math.random()<0.1)
-      raum[y][x]=new Primat(1,0,Math.random()<0.5?1:2,1+Math.floor(Math.random()*9),1+Math.floor(Math.random()*9));
-  tickIndex=0;history=[];
-  updateDisplays();
+    raum=createEmpty();
+    initRessourcen(); // Ressourcen initialisieren
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)
+        if(Math.random()<0.1){
+            const k1 = 1+Math.floor(Math.random()*9);
+            const k2 = 1+Math.floor(Math.random()*9); // Sekundärkultur ist auch zufällig
+            raum[y][x]=new Primat(1,0,Math.random()<0.5?1:2,k1,k2,1+Math.floor(Math.random()*9));
+        }
+    tickIndex=0;history=[];
+    updateDisplays();
 }
+
 function nachbarn(r,x,y){
-  const xm1=(x-1+BREITE)%BREITE,xp1=(x+1)%BREITE,ym1=(y-1+HOEHE)%HOEHE,yp1=(y+1)%HOEHE;
-  return [r[ym1][xm1],r[ym1][x],r[ym1][xp1],r[y][xm1],r[y][xp1],r[yp1][xm1],r[yp1][x],r[yp1][xp1]];
+    const xm1=(x-1+BREITE)%BREITE,xp1=(x+1)%BREITE,ym1=(y-1+HOEHE)%HOEHE,yp1=(y+1)%HOEHE;
+    return [
+        {p:r[ym1][xm1], x:xm1, y:ym1}, {p:r[ym1][x], x:x, y:ym1}, {p:r[ym1][xp1], x:xp1, y:ym1}, 
+        {p:r[y][xm1], x:xm1, y:y}, {p:r[y][xp1], x:xp1, y:y}, 
+        {p:r[yp1][xm1], x:xm1, y:yp1}, {p:r[yp1][x], x:x, y:yp1}, {p:r[yp1][xp1], x:xp1, y:yp1}
+    ];
 }
-function kind(m){return new Primat(1,0,Math.random()<0.5?1:2,m.kultur,m.macht);}
+
+// Hilfsfunktion: Kulturelle Affinität
+function kulturelleNaehe(p1, p2){
+    if (p1.kultur === p2.kultur || p1.kultur === p2.kultur2 || p1.kultur2 === p2.kultur || p1.kultur2 === p2.kultur2) return 1;
+    return 0;
+}
+
+// 1. & 3. Kind-Erzeugung (Hybridisierung, Weibliche Affinität)
+function kind(mutter, vater){
+    // Primärkultur von der Mutter (weibliche Vererbung)
+    const k1 = mutter.kultur; 
+    // Sekundärkultur vom Vater (männlicher Einfluss)
+    const k2 = vater.kultur; 
+    const geschl = Math.random()<0.5?1:2;
+    // Das Kind erbt die Macht des Vaters (Dominanz)
+    const macht = vater.macht; 
+    return new Primat(1,0,geschl,k1,k2,macht);
+}
+
+// 4. Ressourcen-Aggregierung
+function getNachbarRessourcen(x, y){
+    let sumR = ressourcen[y][x];
+    const n = nachbarn(raum, x, y);
+    n.forEach(neighbor => {
+        sumR += ressourcen[neighbor.y][neighbor.x];
+    });
+    // Ressourcen sind begrenzt, max 8 * 5 = 40 + 5 (Zelle selbst) = 45 -> normiert auf 1-10
+    return Math.min(10, Math.floor(sumR / 5)); 
+}
+
+// 5. Überprüfung der Isolation (Toleranz)
+function checkIsolation(n, x, y){
+    if(n.status <= 0 || n.kultur <= 0) return false;
+    
+    // Zähle fremde Nachbarn unter Berücksichtigung der Hybridisierung
+    const nb = nachbarn(raum, x, y);
+    const fremdeNachbarn = nb.filter(nbObj => {
+        const p = nbObj.p;
+        if (p.status <= 0 || p.kultur <= 0) return false; // Nicht belegt oder keine Kultur
+        
+        // NEU: Nachbar gilt NICHT als fremd, wenn Primär- oder Sekundärkultur geteilt wird
+        return !kulturelleNaehe(n, p);
+    }).length;
+    
+    const toleranz = KULTUR_TOLERANZ[n.kultur];
+    const isolationsgrad = fremdeNachbarn / 8; // 0 bis 1
+    
+    // Sterbewahrscheinlichkeit: steigt mit Isolation und sinkt mit Toleranz
+    const sterbeW = isolationsgrad * (1 - toleranz);
+    
+    return Math.random() < sterbeW;
+}
+
 function neu(r,x,y){
-  const n=Object.assign(new Primat(),r[y][x]),nb=nachbarn(r,x,y);
-  if(n.status>0){if(Math.random()<0.8)n.alter++;if(n.alter>19)n.status=0;else if(n.alter>=3&&n.status===1)n.status=2;}
-  if(n.status===0){
-    const wm=nb.filter(p=>p.status===2&&p.geschlecht===1),mm=nb.filter(p=>p.status===2&&p.geschlecht===2);
-    if(wm.length&&mm.length&&Math.random()<0.25)return kind(wm[Math.floor(Math.random()*wm.length)]);
-    if(Math.random()<0.001)return new Primat(1,0,Math.random()<0.5?1:2,1+Math.floor(Math.random()*9),1+Math.floor(Math.random()*9));
-  }
-  if(n.status>0){
-    const fremde=nb.filter(p=>p.kultur!==n.kultur);
-    if(fremde.length===8)return new Primat();
-  }
-  if(n.status===2){
-    const staerker=nb.filter(p=>p.status===2&&p.macht>n.macht);
-    if(staerker.length){
-      const a=staerker.reduce((x,y)=>x.macht>y.macht?x:y);
-      if(Math.random()<0.3){n.kultur=a.kultur;n.macht=Math.max(0,n.macht-1);}
-    }else n.macht=Math.min(9,n.macht+0.1);
-  }
-  return n;
+    const n=Object.assign(new Primat(),r[y][x]);
+    const nb=nachbarn(r,x,y);
+    const nachbarPrimaten = nb.map(obj => obj.p); // Nur die Primaten-Objekte
+
+    // 4. Ressourcen-Ebene anpassen (verbrauchen und nachwachsen)
+    const lokaleRessourcen = ressourcen[y][x];
+    if(n.status > 0 && lokaleRessourcen > 0) ressourcen[y][x] = Math.max(0, lokaleRessourcen - 1);
+    else ressourcen[y][x] = Math.min(5, lokaleRessourcen + 1); // Langsames Nachwachsen
+
+    // Alterung und Tod
+    if(n.status>0){
+        if(Math.random()<0.8)n.alter++;
+        if(n.alter>19)n.status=0;
+        else if(n.alter>=3&&n.status===1)n.status=2;
+    }
+    
+    // 5. Kulturelle Isolation (Tod durch fehlende Toleranz)
+    if(n.status>0 && checkIsolation(n, x, y)) return new Primat();
+
+    // Geburt
+    if(n.status===0){
+        const wm=nachbarPrimaten.filter(p=>p.status===2&&p.geschlecht===1);
+        const mm=nachbarPrimaten.filter(p=>p.status===2&&p.geschlecht===2);
+
+        // 3. Weibliche Affinität in der Partnerwahl
+        if(wm.length&&mm.length&&Math.random()<0.25){
+            // Weibchen wählt Partner basierend auf Macht (80%) UND kultureller Nähe (20%)
+            let bestenPartner = null, maxScore = -1;
+            wm.forEach(w => {
+                mm.forEach(m => {
+                    const affinitaet = kulturelleNaehe(w, m);
+                    // Score = 0.8 * Macht + 0.2 * Kulturelle Nähe
+                    const score = 0.8 * m.macht + 0.2 * affinitaet * 9; 
+                    if (score > maxScore) {
+                        maxScore = score;
+                        bestenPartner = {mutter: w, vater: m};
+                    }
+                });
+            });
+            if(bestenPartner) return kind(bestenPartner.mutter, bestenPartner.vater);
+        }
+        if(Math.random()<0.0005) { // Spontangeburt mit geringerer Wahrscheinlichkeit
+             const k1 = 1+Math.floor(Math.random()*9);
+             const k2 = 1+Math.floor(Math.random()*9);
+             return new Primat(1,0,Math.random()<0.5?1:2,k1,k2,1+Math.floor(Math.random()*9));
+        }
+    }
+    
+    // Kulturelle und Macht-Dynamik (nur erwachsene Männchen)
+    if(n.status===2 && n.geschlecht===2){
+        // 4. Machtgewinn durch Ressourcen
+        const resBonus = getNachbarRessourcen(x, y) / 10; // 0 bis 1
+        
+        const staerker=nachbarPrimaten.filter(p=>p.status===2&&p.geschlecht===2&&p.macht>n.macht);
+        
+        if(staerker.length){
+            const a=staerker.reduce((x,y)=>x.macht>y.macht?x:y);
+            
+            // 2. Macht-Puffer: Nur übernehmen, wenn der Nachbar VIEL stärker ist (Machtunterschied > 3)
+            if(a.macht > n.macht + 3 && Math.random()<0.3){
+                n.kultur=a.kultur;
+                n.kultur2=a.kultur2; // Übernahme beider kultureller Merkmale
+                n.macht=Math.max(1, n.macht-1); // Machtverlust bei Unterordnung
+            }
+        } else {
+            // Machtgewinn basiert auf vorhandenen lokalen Ressourcen
+            n.macht=Math.min(9, n.macht + 0.1 + resBonus * 0.2); 
+        }
+    }
+    return n;
 }
+
 function berechneStat(){
-  const c=Array(9).fill(0);let pop=0;
-  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
-    const p=raum[y][x];if(p.status>0&&p.kultur>0){c[p.kultur-1]++;pop++;}}
-  const fr=c.map(v=>pop>0?v/pop:0);history.push({fractions:fr,population:pop,tick:tickIndex});
-  if(history.length>MAX_HISTORY)history.shift();
-  return{fr,pop};
+    const c=Array(9).fill(0);let pop=0;
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+        const p=raum[y][x];
+        if(p.status>0&&p.kultur>0){
+            // Zähle Primärkultur
+            c[p.kultur-1]++;
+            // NEU: Zähle Sekundärkultur, aber nur, wenn sie unterschiedlich ist
+            if(p.kultur2 > 0 && p.kultur2 !== p.kultur) c[p.kultur2-1]++;
+            pop++;
+        }
+    }
+    // Die Fraktionen basieren jetzt auf der SUMME der gezählten Kulturen (könnte mehr als die Population sein)
+    const sumKulturen = c.reduce((sum, val) => sum + val, 0);
+    const fr=c.map(v=>sumKulturen>0?v/sumKulturen:0);
+    history.push({fractions:fr,population:pop,tick:tickIndex});
+    if(history.length>MAX_HISTORY)history.shift();
+    return{fr,pop};
 }
+
 function detectMono(fr,p){const i=fr.indexOf(Math.max(...fr)),v=fr[i];return(v>=0.995&&p>10)?{mono:true,k:i+1}:{mono:false};}
+
 function zeichneStatus(){
-  const cell=Math.floor(320/BREITE);
-  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
-    const p=raum[y][x];let col='#000';
-    if(p.status===1)col=p.geschlecht===1?'#ffb6c1':'#87cefa';
-    else if(p.status===2)col=p.geschlecht===1?'#ff69b4':'#1e90ff';
-    cS.fillStyle=col;cS.fillRect(x*cell,y*cell,cell,cell);
-  }
+    const cell=Math.floor(320/BREITE);
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+        const p=raum[y][x];let col='#000';
+        if(p.status===1)col=p.geschlecht===1?'#ffb6c1':'#87cefa';
+        else if(p.status===2)col=p.geschlecht===1?'#ff69b4':'#1e90ff';
+        // NEU: Ressourcen-Anzeige als Hintergrund-Farbe (optional)
+        const res = ressourcen[y][x] / 5; // 0 bis 1
+        cS.fillStyle=`rgb(0, ${Math.floor(res*120)}, 0)`;
+        cS.fillRect(x*cell,y*cell,cell,cell);
+        
+        // Farbe für Primat über Ressourcen-Hintergrund
+        if(p.status>0){
+             cS.fillStyle=col;
+             cS.fillRect(x*cell,y*cell,cell,cell);
+        }
+    }
 }
+
 function zeichneKultur(){
-  const cell=Math.floor(320/BREITE);
-  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
-    const p=raum[y][x],col=p.kultur>0?KULTUR_FARBEN[p.kultur]:'#000';
-    cK.fillStyle=col;cK.fillRect(x*cell,y*cell,cell,cell);
-  }
+    const cell=Math.floor(320/BREITE);
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++){
+        const p=raum[y][x];
+        // Anzeige der Primärkultur
+        let col=p.kultur>0?KULTUR_FARBEN[p.kultur]:'#000';
+        cK.fillStyle=col;cK.fillRect(x*cell,y*cell,cell,cell);
+    }
 }
+
 function drawChart(){
-  const W=640,H=220; cD.fillStyle='#000'; cD.fillRect(0,0,W,H);
-  const wnd=(selWindow.value==='all')?history.length:Math.min(history.length,parseInt(selWindow.value));
-  if(wnd<2)return;
-  const px=W/Math.max(wnd-1,1);
-  for(let k=0;k<9;k++){
-    cD.beginPath();cD.strokeStyle=KULTUR_FARBEN[k+1];cD.lineWidth=2;
-    for(let i=0;i<wnd;i++){
-      const d=history[history.length-wnd+i];
-      const x=i*px,y=H-d.fractions[k]*H;
-      if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
-    }cD.stroke();
-  }
-  if(chkPop.checked){
-    cD.beginPath();cD.strokeStyle='#fff';cD.lineWidth=1.5;
-    for(let i=0;i<wnd;i++){
-      const d=history[history.length-wnd+i];
-      const y=H-(d.population/(BREITE*HOEHE))*H;
-      const x=i*px;
-      if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
-    }cD.stroke();
-  }
+    const W=640,H=220; cD.fillStyle='#000'; cD.fillRect(0,0,W,H);
+    const wnd=(selWindow.value==='all')?history.length:Math.min(history.length,parseInt(selWindow.value));
+    if(wnd<2)return;
+    const px=W/Math.max(wnd-1,1);
+    for(let k=0;k<9;k++){
+        cD.beginPath();cD.strokeStyle=KULTUR_FARBEN[k+1];cD.lineWidth=2;
+        for(let i=0;i<wnd;i++){
+            const d=history[history.length-wnd+i];
+            const x=i*px,y=H-d.fractions[k]*H;
+            if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
+        }cD.stroke();
+    }
+    if(chkPop.checked){
+        cD.beginPath();cD.strokeStyle='#fff';cD.lineWidth=1.5;
+        for(let i=0;i<wnd;i++){
+            const d=history[history.length-wnd+i];
+            const y=H-(d.population/(BREITE*HOEHE))*H;
+            const x=i*px;
+            if(i===0)cD.moveTo(x,y);else cD.lineTo(x,y);
+        }cD.stroke();
+    }
 }
+
 function tick(){
-  const newR=createEmpty();
-  for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)newR[y][x]=neu(raum,x,y);
-  raum=newR;tickIndex++;
-  const {fr,pop}=berechneStat();
-  const det=detectMono(fr,pop);
-  if(det.mono){monokulturInfo.textContent=`Monokultur erkannt: Kultur ${det.k}`;
-    if(chkAutoStop.checked)stopSim();}
-  else monokulturInfo.textContent='';
-  dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);
-  popCount.textContent=pop;tickCount.textContent=tickIndex;
-  zeichneStatus();zeichneKultur();drawChart();
+    const newR=createEmpty();
+    for(let y=0;y<HOEHE;y++)for(let x=0;x<BREITE;x++)newR[y][x]=neu(raum,x,y);
+    raum=newR;tickIndex++;
+    const {fr,pop}=berechneStat();
+    const det=detectMono(fr,pop);
+    if(det.mono){monokulturInfo.textContent=`Monokultur erkannt: Kultur ${det.k}`;
+        if(chkAutoStop.checked)stopSim();}
+    else monokulturInfo.textContent='';
+    dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);
+    popCount.textContent=pop;tickCount.textContent=tickIndex;
+    zeichneStatus();zeichneKultur();drawChart();
 }
+
 function startSim(){if(timer)return;TICK_MS=parseInt(selTick.value,10);timer=setInterval(tick,TICK_MS);}
 function stopSim(){if(!timer)return;clearInterval(timer);timer=null;}
 function updateDisplays(){const {fr,pop}=berechneStat();zeichneStatus();zeichneKultur();drawChart();
-  popCount.textContent=pop;dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);}
+    popCount.textContent=pop;dominant.textContent='K'+(fr.indexOf(Math.max(...fr))+1);}
 function exportCSV(){
-  if(!history.length)return;const head=['tick','pop',...Array.from({length:9},(_,i)=>'k'+(i+1))];
-  const rows=[head.join(',')];for(const d of history)
-    rows.push([d.tick,d.population,...d.fractions.map(f=>f.toFixed(5))].join(','));
-  const blob=new Blob([rows.join('\n')],{type:'text/csv'});const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='kulturverlauf.csv';a.click();URL.revokeObjectURL(a.href);
+    if(!history.length)return;const head=['tick','pop',...Array.from({length:9},(_,i)=>'k'+(i+1))];
+    const rows=[head.join(',')];for(const d of history)
+        rows.push([d.tick,d.population,...d.fractions.map(f=>f.toFixed(5))].join(','));
+    const blob=new Blob([rows.join('\n')],{type:'text/csv'});const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='kulturverlauf.csv';a.click();URL.revokeObjectURL(a.href);
 }
 function exportPNG(){const a=document.createElement('a');a.href=document.getElementById('canvasDiagramm').toDataURL();a.download='diagramm.png';a.click();}
 function buildLegend(){
-  const box=document.getElementById('legendKultur');box.innerHTML='';
-  for(let i=1;i<=9;i++){const d=document.createElement('div');
-    d.innerHTML=`<span class='simulation-swatch' style='background:${KULTUR_FARBEN[i]}'></span>Kultur ${i}`;box.appendChild(d);}
+    const box=document.getElementById('legendKultur');box.innerHTML='';
+    for(let i=1;i<=9;i++){const d=document.createElement('div');
+        d.innerHTML=`<span class='simulation-swatch' style='background:${KULTUR_FARBEN[i]}'></span>Kultur ${i}`;box.appendChild(d);}
 }
+
+// Event-Handler
 document.getElementById('btnZufall').onclick=()=>{zufallsverteilung();updateDisplays();};
 document.getElementById('btnStart').onclick=startSim;
 document.getElementById('btnStop').onclick=stopSim;
